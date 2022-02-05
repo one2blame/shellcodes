@@ -56,14 +56,16 @@ int main(int argc, char** argv) {
     }
 
     // Read FILE contents into shellcode_segment
-    int bytes_read = 0;
+    unsigned int total_bytes = 0;
+    size_t bytes_read = 0;
     while(!feof(shellcode_file)) {
-        bytes_read = fread(&shellcode_segment[bytes_read], stat_buf.st_size - bytes_read, 1, shellcode_file);
+        bytes_read = fread(&shellcode_segment[total_bytes], stat_buf.st_size - total_bytes, 1, shellcode_file);
         if (0 > bytes_read) {
             int errnum = errno;
             print_err("Failed to read from file: %s, errno: %d\n", argv[1], errnum);
             goto CLEANUP;
         }
+        total_bytes += bytes_read;
     }
 
     // Close FILE
