@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     // User should provide FILE argument
     if (2 != argc) {
         puts(USAGE);
-        return -1;
+        goto CLEANUP;
     }
 
     // Check to see if FILE exists
