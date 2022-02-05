@@ -9,8 +9,8 @@ auto-generation, etc.
 
 Currently, this repository only contains shellcodes to execute a single command
 on a remote target across multiple different architectures. There are plenty of
-methods to write shellcode in C, however, conducting program counter based
-jumps to store strings in registers seems easier to do in assembly.
+methods to write shellcode in C, however, conducting relative jumps to store
+strings in registers seems easier to do in assembly.
 
 ## Contributing
 
