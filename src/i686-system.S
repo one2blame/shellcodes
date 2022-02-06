@@ -67,3 +67,5 @@ pop_tacc:
 
 pop_userinput:
     call ret3
+
+user_input:
